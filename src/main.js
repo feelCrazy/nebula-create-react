@@ -4,6 +4,7 @@ import { promisify } from 'util'
 import execa from 'execa'
 import Listr from 'listr'
 import fs from 'fs-extra'
+const execSync = require('child_process').execSync
 
 const access = promisify(fs.access)
 
@@ -18,7 +19,7 @@ async function copyTemptaleFiles(options) {
 // 初始化git
 async function initGit(options) {
   const result = await execa('git', ['init'], {
-    cwd: options.targetDirectory
+    cwd: options.targetDirectory,
   })
   if (result.failed) {
     return Promise.reject(new Error('Failed to init git'))
@@ -43,7 +44,7 @@ async function installPackage(options) {
     command = 'yarn'
   }
   const result = await execa(command, args, {
-    cwd: options.targetDirectory
+    cwd: options.targetDirectory,
   })
   if (result.failed) {
     return Promise.reject(
@@ -54,9 +55,9 @@ async function installPackage(options) {
 }
 
 // 判断是否安装yarn
-async function shouldUseYarn() {
+function shouldUseYarn() {
   try {
-    execa('yarnpkg --version', { stdio: 'ignore' })
+    execSync('yarnpkg --version', { stdio: 'ignore' })
     return true
   } catch (e) {
     return false
@@ -66,12 +67,11 @@ async function shouldUseYarn() {
 export async function createProject(options) {
   options = {
     ...options,
-    targetDirectory: options.targetDirectory || process.cwd()
+    targetDirectory: options.targetDirectory || process.cwd(),
   }
 
-  const currentFileUrl = __dirname
   const templateDir = path.resolve(
-    new URL(currentFileUrl).pathname,
+    __dirname,
     '../templates',
     options.template.toLowerCase()
   )
@@ -90,17 +90,17 @@ export async function createProject(options) {
       title: 'Copy project files...',
       task: () => {
         copyTemptaleFiles(options)
-      }
+      },
     },
     {
       title: 'Initialized a git repository...',
       task: () => initGit(options),
-      enabled: () => options.git
+      enabled: () => options.git,
     },
     {
       title: 'Automatically intall dependencies...',
-      task: () => installPackage(options)
-    }
+      task: () => installPackage(options),
+    },
   ])
 
   await tasks.run()

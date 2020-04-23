@@ -11,7 +11,7 @@ function outTitle() {
       figlet.textSync('create-react', {
         font: 'Standard',
         horizontalLayout: 'default',
-        verticalLayout: 'default'
+        verticalLayout: 'default',
       })
     )
   )
@@ -28,17 +28,17 @@ function argIntoOptions(rawArgs) {
       '-g': '--git',
       '-y': '--yes',
       '-h': '--help',
-      '-v': '--version'
+      '-v': '--version',
     },
     {
-      argv: rawArgs.slice('2')
+      argv: rawArgs.slice('2'),
     }
   )
   return {
     skipPrompts: args['--yes'] || false,
     git: args['--git'] || false,
     template: args._[0],
-    version: args['--version'] || false
+    version: args['--version'] || false,
   }
 }
 
@@ -48,7 +48,7 @@ async function promptForMissingOptions(options) {
   if (options.skipPrompts) {
     return {
       ...options,
-      template: options.template || defaultTemplate
+      template: options.template || defaultTemplate,
     }
   }
   const questions = []
@@ -58,7 +58,7 @@ async function promptForMissingOptions(options) {
       name: 'template',
       message: 'Pleast choose whice project template to use',
       choices: ['TypeScript', 'JavaScript'],
-      default: defaultTemplate
+      default: defaultTemplate,
     })
   }
   if (!options.git) {
@@ -66,19 +66,19 @@ async function promptForMissingOptions(options) {
       type: 'confirm',
       name: 'git',
       message: 'Init a git repository',
-      default: false
+      default: false,
     })
   }
   if (options.version) {
     console.log(chalk.green.bold('version:'), pkg.version)
-    process.exit(1)
+    return
   }
 
   const answers = await inquirer.prompt(questions)
   return {
     ...options,
     template: options.template || answers.template,
-    git: options.git || answers.git
+    git: options.git || answers.git,
   }
 }
 

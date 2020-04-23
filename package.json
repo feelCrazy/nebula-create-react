@@ -1,8 +1,8 @@
 {
   "name": "nebula-create-react",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A CLI to create react app project",
-  "repository": "feelingCrazy/create-react",
+  "repository": "feelingCrazy/nebula-create-react",
   "main": "src/index.js",
   "bin": {
     "create-react": "bin/create-react"
